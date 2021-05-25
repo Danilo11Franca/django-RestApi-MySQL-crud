@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 
 from copy import deepcopy
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'POST'])
 def product_list(request):
 
     if request.method == 'GET':
@@ -135,10 +135,6 @@ def product_list(request):
             return JsonResponse(product_serializer.data["id"], status=status.HTTP_201_CREATED, safe=False)
 
         return JsonResponse({"errorText": "SKU '{}' already exists".format(product_data["sku"])}, status=status.HTTP_400_BAD_REQUEST)
-    
-    elif request.method == 'DELETE':
-        count = Product.objects.all().delete()
-        return JsonResponse({"message": '{} Products were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
  
  
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -218,13 +214,3 @@ def product_detail(request, pk):
         product = Product.objects.get(pk=pk)
         product.delete()
         return JsonResponse(True, status=status.HTTP_204_NO_CONTENT, safe=False)
-    
-        
-@api_view(['GET'])
-def product_list_published(request):
-    products = Product.objects.filter(published=True)
-        
-    if request.method == 'GET': 
-        products_serializer = ProductSerializer(products, many=True)
-        return JsonResponse(products_serializer.data, safe=False)
-    
